@@ -7,14 +7,14 @@ const jsonwebtoken = require('jsonwebtoken');
 async function handleSignIn(req, res) {
     try {
         const {email, password} = req.body;
-
         const user = await User.findOne({email});
+        console.log(user)
         if(!user) return res.status(401).json("Please create an account");
         
         const result = await bcryptjs.compare(password,user.password);
-        if(!result) return res.staus(401).json("Incorrect password");
+        if(!result) return res.status(401).json("Incorrect password");
 
-        const token = jsonwebtoken.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:'1h'});
+        const token = jsonwebtoken.sign({id:user._id,username:user.name,email:user.email,profile_pic:user.profile_pic},process.env.JWT_SECRET,{expiresIn:'1h'});
 
         res.cookie("authtoken",token,{
             httpOnly:false,
@@ -22,7 +22,7 @@ async function handleSignIn(req, res) {
             sameSite:'lax',
             path:"/"
         });
-        return res.status(201).json("Login successfull");
+        return res.status(200).json("Login successfull");
 
     }
     catch(err) {
@@ -107,4 +107,28 @@ async function handleOtpRequests(req, res) {
     return res.status(501).json("Some error occured please try again later");
   }
 }
-module.exports = { handleSignIn, handleSignUp, handleLogout, handleOtpRequests,verifyEmail };
+
+async function handleCheckAuth(req, res) {
+  try {
+    const token = req.cookies.authtoken;
+    if(!token) res.status(401)
+    
+    const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+
+    const user = {
+      id:decoded.id,
+      name:decoded.name,
+      email:decoded.email,
+      profile_pic:decoded.profile_pic
+    }
+
+    return res.status(201).json(user);
+
+  }
+  catch(err) {
+    console.log(err.message);
+    return res.status(501).json("Some error occured please try again later");
+  }
+}
+
+module.exports = { handleSignIn, handleSignUp, handleLogout, handleOtpRequests,verifyEmail, handleCheckAuth };
