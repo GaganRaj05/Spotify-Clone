@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const connectToDb = require("./config/db");
 const authRoutes = require("./routes/auth");
+const songsRoutes = require("./routes/songs");
+const checkAuth = require("./middlewares/checkAuth")
 const app = express();
 app.use(cors({
     origin:"http://localhost:5173",
@@ -15,7 +17,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cookieParser());
-
+app.use("/app/songs",checkAuth,songsRoutes);
 app.use("/app/auth",authRoutes);
 connectToDb(process.env.MONGODB_URL);
 
