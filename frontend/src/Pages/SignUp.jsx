@@ -1,6 +1,10 @@
+import "../assets/styles/signUp.css"
+import SignUpForm from "../Components/signUpForm";
 function SignUp() {
     return (
-        <>Sign-up</>
+        <div className="signup-form-container">
+            <SignUpForm/>
+        </div>
     )
 }
 

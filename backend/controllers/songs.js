@@ -1,6 +1,7 @@
 const Song = require("../Models/Song");
 const bufferToStream = require('../config/bufferToStream');
 const cloudinary = require("../config/cloudinaryConfig");
+const SongLog = require("../Models/SongLog")
 async function getSongs(req, res) {
     try {
         const result = await Song.find().populate({
@@ -20,6 +21,11 @@ async function getParticularSongs(req, res) {
         const song = await Song.find({_id:song_id}).populate({
             path:"artist",
             select:"name profile_pic"
+        });
+        await SongLog.create({
+            user:req.user_id,
+            song:song_id,
+            timeStamp:Date.now()
         });
         return res.status(200).json(song);
     }

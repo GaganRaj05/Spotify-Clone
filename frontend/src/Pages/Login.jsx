@@ -1,6 +1,10 @@
+import "../assets/styles/login.css"
+import LoginForm from "../Components/loginForm";
 function Login() {
     return (
-        <>Login</>
+        <div className="login-page-container">
+            <LoginForm/>
+        </div>
     )
 }
 

@@ -8,7 +8,7 @@ const connectToDb = require("./config/db");
 const authRoutes = require("./routes/auth");
 const songsRoutes = require("./routes/songs");
 const checkAuth = require("./middlewares/checkAuth");
-const redisClient = require("./config/redisConfig");
+const cronJob = require("./utils/cronJog");
 
 const app = express();
 app.use(cors({

@@ -9,7 +9,7 @@ const NavBar = () => {
       <nav>
         <ul className="navbar-left">
           <li>
-            <img className="logo" src={Logo} alt="" />
+            <img className="nav-logo" src={Logo} alt="" />
           </li>
           <li>
             <button className="nav-btns">

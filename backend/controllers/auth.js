@@ -34,12 +34,11 @@ async function handleSignIn(req, res) {
 
 async function handleSignUp(req, res) {
   try {
-    const { profile_pic, name, email, password, gender, dob, country } = req.body;
+    const {  name, email, password, gender, dob, country } = req.body;
     const hashedPassword = await bcryptjs.hash(password,await bcryptjs.genSalt(10));
     const hashedUsername = await bcryptjs.hash(name,await bcryptjs.genSalt(10));
     console.log(hashedUsername);
     await User.create({
-        profile_pic,
         name,
         email,
         password:hashedPassword,
