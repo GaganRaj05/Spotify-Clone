@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser');
 const connectToDb = require("./config/db");
 const authRoutes = require("./routes/auth");
 const songsRoutes = require("./routes/songs");
-const checkAuth = require("./middlewares/checkAuth")
+const checkAuth = require("./middlewares/checkAuth");
+const redisClient = require("./config/redisConfig");
+
 const app = express();
 app.use(cors({
     origin:"http://localhost:5173",
