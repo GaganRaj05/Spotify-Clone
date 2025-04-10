@@ -14,7 +14,7 @@ async function handleSignIn(req, res) {
         const result = await bcryptjs.compare(password,user.password);
         if(!result) return res.status(401).json("Incorrect password");
 
-        const token = jsonwebtoken.sign({id:user._id,username:user.name,email:user.email,profile_pic:user.profile_pic},process.env.JWT_SECRET,{expiresIn:'1h'});
+        const token = jsonwebtoken.sign({id:user._id,username:user.name,email:user.email},process.env.JWT_SECRET,{expiresIn:'1h'});
 
         res.cookie("authtoken",token,{
             httpOnly:false,
@@ -22,7 +22,10 @@ async function handleSignIn(req, res) {
             sameSite:'lax',
             path:"/"
         });
-        return res.status(200).json("Login successfull");
+        const userData = {
+          id:user._id,username:user.name,email:user.email
+        }
+        return res.status(200).json({msg:"Login successfull", user:userData});
 
     }
     catch(err) {
@@ -110,7 +113,7 @@ async function handleOtpRequests(req, res) {
 async function handleCheckAuth(req, res) {
   try {
     const token = req.cookies.authtoken;
-    if(!token) res.status(401)
+    if(!token) return res.status(401).json("Not logged in ")
     
     const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
 
@@ -118,10 +121,9 @@ async function handleCheckAuth(req, res) {
       id:decoded.id,
       name:decoded.name,
       email:decoded.email,
-      profile_pic:decoded.profile_pic
     }
 
-    return res.status(201).json(user);
+    return res.status(201).json({user});
 
   }
   catch(err) {

@@ -1,13 +1,15 @@
 const Song = require("../Models/Song");
 const bufferToStream = require('../config/bufferToStream');
 const cloudinary = require("../config/cloudinaryConfig");
-const SongLog = require("../Models/SongLog")
+const SongLog = require("../Models/SongLog");
+const redisClient = require("../config/redisConfig");
 async function getSongs(req, res) {
     try {
         const result = await Song.find().populate({
             path:"artist",
-            select:"name profile_pic"
+            select:"name"
         });
+        console.log(result);
         return res.status(200).json(result);
     }
     catch(err) {
@@ -18,10 +20,11 @@ async function getSongs(req, res) {
 async function getParticularSongs(req, res) {
     try {
         const song_id = req.params.id;
-        const song = await Song.find({_id:song_id}).populate({
+        const song = await Song.find({_id:song_id},{fileUrl:1}).populate({
             path:"artist",
             select:"name profile_pic"
         });
+        console.log(req.user_id)
         await SongLog.create({
             user:req.user_id,
             song:song_id,
@@ -41,6 +44,7 @@ async function uploadSong(req, res) {
         const audioFile = req.files.audio[0];
         const {title, duration} = req.body;
         const artist = req.user_id;
+        console.log(artist)
 
         const thumbnailUpload = await new Promise((resolve,reject) => {
             const stream = cloudinary.uploader.upload_stream(
@@ -83,4 +87,16 @@ async function uploadSong(req, res) {
     }
 }
 
-module.exports = {getSongs, getParticularSongs, uploadSong};
+async function getTopFiftySongs(req, res) {
+    try {
+        const data = await redisClient.get("top 50 songs");
+        if(data) return res.status(200).json(data);
+        return res.status(200).json("No data in cache");
+    }
+    catch(err) {
+        console.log(err);
+        return res.status(501).json("Some error occured please try again later");
+    }
+}
+
+module.exports = {getSongs, getParticularSongs, uploadSong,getTopFiftySongs};

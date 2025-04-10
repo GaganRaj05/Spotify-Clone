@@ -109,6 +109,7 @@ const SignUpForm = () => {
           >
             {isLoading ? "Sending OTP..." : "Send Verification Email"}
           </button>
+          
         )}
 
         {isOtpVerified && (

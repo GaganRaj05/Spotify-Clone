@@ -1,7 +1,12 @@
 .sidebar-container {
     background-color: #121212;
     width: 400px;
-    height: calc(100% - 20px);
+    height: calc(100% - 50px);
     margin: 10px 5px 10px 10px;
     border-radius: 25px;
+    padding: 20px;
+    color: white;
+}
+.sidebar-container h1:hover {
+    color: #1db954;
 }

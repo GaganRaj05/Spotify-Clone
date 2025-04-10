@@ -7,7 +7,7 @@ async function checkAuth() {
         });
         const data = await response.json();
         if(!response.ok) return {error:data};
-        return data;
+        return data.user;
     }
     catch(err) {
         console.log(err.message);
