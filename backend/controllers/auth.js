@@ -89,7 +89,8 @@ async function verifyEmail(req, res) {
 }
 async function handleOtpRequests(req, res) {
   try {
-    const { email } = req.body;
+    const email  = req.query.email;
+    console.log(email)
     const emailExists = await EMAILVERIFY.findOne({email});
     if(emailExists) return res.status(401).json("Email exists please login");
 
@@ -105,7 +106,7 @@ async function handleOtpRequests(req, res) {
     });
     return res.status(201).json("Otp sent successfully to ur email address");
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     return res.status(501).json("Some error occured please try again later");
   }
 }

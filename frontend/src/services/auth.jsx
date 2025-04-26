@@ -20,8 +20,14 @@ async function login(formData) {
 async function signUp(formData) {
     try {
         const response = await fetch(`${BACKEND_URL}/auth/sign-up`, {
+            method:"POST",
+            headers:{"Content-type":"application/json"},
+            body:JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if(!response.ok) return {error:data};
+        return data;
 
-        })
     }
     catch(err) {
         console.log(err.message);
@@ -43,4 +49,38 @@ async function Logout() {
         console.log(err.message);
     }
 }
-export {login, signUp, Logout};
+
+async function sendOtp(email) {
+    try {
+        const response = await fetch(`${BACKEND_URL}/auth/otp?email=${email}`,{
+            method:"GET",
+        });
+        const data = await response.json();
+        if(!response.ok) return {error:data};
+        return data;
+    }
+    catch(err) {
+        console.log(err.message);
+        return {error:err.message};
+    }
+}
+
+async function verifyOtp(email,otp) {
+    try {
+        const formData = {email, otp};
+
+        const response = await fetch(`${BACKEND_URL}/auth/verify-email`,{
+            method:"POST",
+            body:JSON.stringify(formData),
+            headers:{"Content-type":"application/json"},
+        })
+        const data = await response.json();
+        if(!response.ok) return {error:data};
+        return data;
+    }   
+    catch(err) {
+        console.log(err.message);
+        return {error:err.message};
+    }
+}
+export {login, signUp, Logout, sendOtp, verifyOtp};

@@ -7,6 +7,7 @@ import { AiOutlineDownload } from "react-icons/ai";
 import {useNavigate} from "react-router-dom"
 import { useAuth } from "../Context/AuthContext";
 import { Logout } from "../services/auth";
+import {toast} from "react-toastify";
 const NavBar = () => {
   const navigate = useNavigate();
   const handleSignUpClick = (e)=> {
@@ -20,11 +21,11 @@ const NavBar = () => {
     e.preventDefault();
     const response = await Logout();
     if(response.error) {
-      alert(response.error === "Failed to fetch" ? "Some error occured please try again later":response.error);
+      toast.error(response.error === "Failed to fetch" ? "Some error occured please try again later":response.error);
       return;
     }
     setUser(null);
-    alert(response);
+    toast.success(response);
     return;
 
   }
@@ -34,22 +35,22 @@ const NavBar = () => {
       <nav>
         <ul className="navbar-left">
           <li>
-            <button className="logo-btn">
+            <button className="logo-btn" onClick={()=>toast.error("This feature is yet to be added")}>
               <ImSpotify className="nav-logo"/>
             </button>
-          </li>
+          </li> 
           <li>
-            <button>
-              <HiMiniHome className="nav-btns"/>
+            <button onClick={()=>toast.error("This feature is yet to be added")}>
+              <HiMiniHome className="nav-btns" />
             </button>
           </li>
           <li>
-            <form action="" className="search-form">
+            <form action="" className="search-form" onClick={()=>toast.error("This feature is yet to be added")}>
               <button>
                 <IoIosSearch className="nav-btns"/>
               </button>
               <input type="text" placeholder="What do you want to listen ?" />
-              <button>
+              <button onClick={()=>toast.error("This feature is yet to be added")}>
                 <MdStorage className="nav-btns"/>
               </button>
             </form>

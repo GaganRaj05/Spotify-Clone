@@ -4,14 +4,13 @@ import "../assets/styles/loginForm.css";
 import Logo from "../assets/image.png"
 import {login} from "../services/auth";
 import { useAuth } from "../Context/AuthContext";
+import {toast} from "react-toastify";
 const LoginForm = ()=> {
     const [formData, setFormData] = useState({email:"",password:""});
-    const [error, setError] = useState("");
     const {user, setUser} = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate()
     const handleChange = (e)=> {
-        setError("")
         setFormData({...formData,[e.target.name]:e.target.value});
     }
     const handleSubmit = async (e) => {
@@ -20,16 +19,15 @@ const LoginForm = ()=> {
         const response = await login(formData);
         setIsLoading(false);
         if(response.error) {
-            setError(response.error === "Failed to fetch" ? "Some error occured please try again later" : response.error);
+            toast.error(response.error === "Failed to fetch" ? "Some error occured please try again later" : response.error);
             return;
         }
         setUser(response.user);
-        alert('Login successfull');
+        toast.success('Login successfull');
         navigate("/");
     }
     return (
         <div className="login-form-container">
-            {error && <p className="form-error">{error}</p>}
             <img className="logo" src={Logo} alt="" />
             <h1>Log in to Spotify</h1>
             <br />

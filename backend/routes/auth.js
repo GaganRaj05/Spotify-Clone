@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/sign-in",handleSignIn);
 router.post("/sign-up",handleSignUp);
-router.post("/otp",handleOtpRequests);
+router.get("/otp",handleOtpRequests);
 router.post("/verify-email",verifyEmail);
 router.post("/logout",handleLogout);
 router.get("/check-auth",handleCheckAuth)

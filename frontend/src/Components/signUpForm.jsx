@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/image.png";
-import "../assets/styles/signUpForm.css"
+import "../assets/styles/signUpForm.css";
+import { toast } from "react-toastify";
+import { signUp, sendOtp, verifyOtp } from "../services/auth";
+
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,59 +15,80 @@ const SignUpForm = () => {
     country: "",
     confirmPassword: "",
   });
-  
+
   const [otpRequested, setOtpRequested] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [error, setError] = useState("");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setError("")
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match");
-      return;
-    }
-    setIsLoading(true);
-    navigate("/login");
-    setIsLoading(false);
   };
 
   const handleVerifyOtpClicked = async (e) => {
     e.preventDefault();
-    setIsLoading(true)
-    setOtpRequested(true);
-    setIsOtpVerified(false);
+    setIsLoading(true);
+    const response = await sendOtp(formData.email);
     setIsLoading(false);
 
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    
-    if (!otp || otp.length !== 6) {
-      setError("Please enter a 6-digit OTP");
+    if (response.error) {
+      toast.error("Error occurred while sending OTP");
       return;
     }
+
+    toast.success("OTP sent successfully");
+    setOtpRequested(true);
+  };
+
+  // Verify OTP
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter a 6-digit OTP");
+      return;
+    }
+
     setIsLoading(true);
+    const response = await verifyOtp(formData.email, otp);
+    setIsLoading(false);
+
+    if (response.error) {
+      toast.error("Invalid or expired OTP");
+      return;
+    }
+
+    toast.success("OTP verified successfully");
     setOtpRequested(false);
     setIsOtpVerified(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+    const response = await signUp(formData);
     setIsLoading(false);
+
+    if (response.error) {
+      toast.error(response.error.message || "Signup failed");
+      return;
+    }
+
+    toast.success("Account created successfully!");
+    navigate("/login");
   };
 
   return (
     <div className="signup-form">
-      {error && <p className="error-message">{error}</p>}
-        <img className="logo" src={Logo} alt="" />
-        <h1>Sign up to start </h1>
-        <h1>listening</h1>
+      <img className="logo" src={Logo} alt="Logo" />
+      <h1>Sign up to start </h1>
+      <h1>listening</h1>
       <form onSubmit={isOtpVerified ? handleSubmit : handleVerifyOtp}>
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -88,9 +112,11 @@ const SignUpForm = () => {
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
-              placeholder="Enter the otp sent your email"
+              placeholder="Enter the OTP sent to your email"
               value={otp}
-              onChange={(e) => {setOtp(e.target.value);setError("")}}
+              onChange={(e) => {
+                setOtp(e.target.value);
+              }}
               maxLength={6}
               required
             />
@@ -101,15 +127,14 @@ const SignUpForm = () => {
         )}
 
         {!otpRequested && !isOtpVerified && (
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleVerifyOtpClicked}
             disabled={isLoading}
             className="signupform-btns"
           >
             {isLoading ? "Sending OTP..." : "Send Verification Email"}
           </button>
-          
         )}
 
         {isOtpVerified && (
@@ -156,9 +181,9 @@ const SignUpForm = () => {
 
             <div className="form-group">
               <label htmlFor="gender">Gender</label>
-              <select 
+              <select
                 id="gender"
-                name="gender" 
+                name="gender"
                 value={formData.gender}
                 onChange={handleChange}
                 required
@@ -195,7 +220,7 @@ const SignUpForm = () => {
               />
             </div>
 
-            <button className="signupform-btns" type="submit" disabled={isLoading} >
+            <button className="signupform-btns" type="submit" disabled={isLoading}>
               {isLoading ? "Creating Account..." : "Sign Up"}
             </button>
           </>
